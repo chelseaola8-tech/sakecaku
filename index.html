@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0f172a">
+  <title>SAKECAKU F&B KEUANGAN - Manajemen Finansial Bisnis</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior-y: contain;
+    }
+    h1, h2, h3, .font-heading {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .app-shell {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background-color: #f8fafc;
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+      position: relative;
+      padding-bottom: 92px;
+      overflow-x: hidden;
+    }
+    .bottom-nav {
+      max-width: 480px;
+      margin: 0 auto;
+      left: 0;
+      right: 0;
+    }
+    ::-webkit-scrollbar { width: 0px; background: transparent; }
+    
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .animate-slide-up { animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1); }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .animate-fade { animation: fadeIn 0.2s ease-out; }
+  </style>
+</head>
+<body class="text-slate-800 antialiased select-none">
+
+  <!-- Toast Notification -->
+  <div id="toastContainer" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-[420px] flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Main Mobile Shell -->
+  <div class="app-shell flex flex-col">
+    
+    <!-- Premium Glassmorphic Header -->
+    <header class="bg-slate-900 text-white px-5 pt-6 pb-10 rounded-b-[32px] shadow-xl relative overflow-hidden">
+      <div class="absolute -right-10 -top-10 w-44 h-44 rounded-full bg-emerald-500/20 blur-2xl pointer-events-none"></div>
+      <div class="absolute -left-10 bottom-0 w-36 h-36 rounded-full bg-amber-500/15 blur-2xl pointer-events-none"></div>
+
+      <div class="flex items-center justify-between relative z-10">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/30 text-slate-950 font-bold text-xl">
+            💰
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 id="headerOutletName" class="text-base font-extrabold tracking-tight text-white">SAKECAKU KEUANGAN</h1>
+            </div>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="text-[11px] text-slate-300 font-medium">Pencatatan Bisnis F&B • Cloud Sync</span>
+            </div>
+          </div>
+        </div>
+        <button onclick="switchTab('akun')" class="p-2.5 rounded-2xl bg-white/10 hover:bg-white/25 text-white border border-white/10 transition active:scale-90 font-bold">
+          ⚙️
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Dynamic Content -->
+    <main class="flex-1 px-4 -mt-6 space-y-4 z-10">
+
+      <!-- =================================================================
+           TAB 1: BERANDA & ANALISIS KEUANGAN
+           ================================================================= -->
+      <section id="tab-dashboard" class="tab-view space-y-4 animate-fade">
+        
+        <!-- Hero Balance Card -->
+        <div class="bg-white p-5 rounded-3xl shadow-md border border-slate-200/70 relative overflow-hidden">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Laba Bersih / Saldo Kas</span>
+              <h2 id="kpiLaba" class="text-2xl font-extrabold text-slate-900 tracking-tight mt-0.5">Rp 0</h2>
+            </div>
+            <div id="kpiMarginBadge" class="px-3 py-1 rounded-full text-[11px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
+              Margin 0%
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-slate-100">
+            <div class="bg-emerald-50/70 p-3 rounded-2xl border border-emerald-100">
+              <div class="flex items-center gap-1.5 text-emerald-700">
+                <span>📈</span>
+                <span class="text-[10px] font-bold uppercase">Total Pemasukan</span>
+              </div>
+              <p id="kpiMasuk" class="text-sm font-extrabold text-slate-900 mt-1">Rp 0</p>
+            </div>
+            <div class="bg-rose-50/70 p-3 rounded-2xl border border-rose-100">
+              <div class="flex items-center gap-1.5 text-rose-700">
+                <span>📉</span>
+                <span class="text-[10px] font-bold uppercase">Total Pengeluaran</span>
+              </div>
+              <p id="kpiKeluar" class="text-sm font-extrabold text-slate-900 mt-1">Rp 0</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Action Grid (4 Tombol Utama) -->
+        <div class="grid grid-cols-4 gap-2">
+          <button onclick="openTrxModal('Pemasukan')" class="bg-white hover:bg-emerald-50 p-3 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col items-center gap-1.5 active:scale-95 transition">
+            <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-lg">
+              ➕
+            </div>
+            <span class="text-[10px] font-bold text-slate-700">Masuk</span>
+          </button>
+          <button onclick="openTrxModal('Pengeluaran')" class="bg-white hover:bg-rose-50 p-3 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col items-center gap-1.5 active:scale-95 transition">
+            <div class="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-lg">
+              ➖
+            </div>
+            <span class="text-[10px] font-bold text-slate-700">Keluar</span>
+          </button>
+          <button onclick="switchTab('hpp')" class="bg-white hover:bg-blue-50 p-3 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col items-center gap-1.5 active:scale-95 transition">
+            <div class="w-9 h-9 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg">
+              🧮
+            </div>
+            <span class="text-[10px] font-bold text-slate-700">Hitung HPP</span>
+          </button>
+          <button onclick="switchTab('kasbon')" class="bg-white hover:bg-amber-50 p-3 rounded-2xl border border-slate-200/80 shadow-2xs flex flex-col items-center gap-1.5 active:scale-95 transition">
+            <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-lg">
+              👥
+            </div>
+            <span class="text-[10px] font-bold text-slate-700">Kasbon</span>
+          </button>
+        </div>
+
+        <!-- Financial Health Metrics -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-slate-500">Food Cost Ratio</span>
+              <span class="w-6 h-6 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs">📊</span>
+            </div>
+            <p id="kpiFoodCost" class="text-xl font-extrabold text-slate-900 mt-1">0%</p>
+            <p id="kpiFoodCostStatus" class="text-[10px] font-semibold text-emerald-600 mt-0.5">Ideal: 25% - 35%</p>
+          </div>
+
+          <div onclick="switchTab('kasbon')" class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs cursor-pointer active:scale-98 transition">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold text-slate-500">Piutang / Kasbon</span>
+              <span class="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs">📑</span>
+            </div>
+            <p id="kpiPiutang" class="text-xl font-extrabold text-slate-900 mt-1">Rp 0</p>
+            <p id="kpiHutang" class="text-[10px] font-medium text-slate-500 mt-0.5">Hutang: Rp 0</p>
+          </div>
+        </div>
+
+        <!-- Target Omzet Progress -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xs font-extrabold text-slate-800 flex items-center gap-1.5">
+              🎯 Target Omzet Bulanan
+            </span>
+            <span id="targetPct" class="text-[11px] font-extrabold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full">0%</span>
+          </div>
+          <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+            <div id="targetBar" class="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <div class="flex justify-between text-[11px] text-slate-500 font-semibold mt-2">
+            <span id="targetNowText">Rp 0</span>
+            <span id="targetMaxText">Target: Rp 30.000.000</span>
+          </div>
+        </div>
+
+        <!-- Smart AI Advisor -->
+        <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-4 rounded-2xl shadow-md">
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center shrink-0 mt-0.5 shadow-sm text-lg">
+              ✨
+            </div>
+            <div>
+              <h3 class="text-xs font-extrabold text-amber-300 tracking-wide uppercase">Asisten Finansial F&B</h3>
+              <p id="smartAdvisorMsg" class="text-xs text-slate-200 mt-1 leading-relaxed">
+                Menganalisis kesehatan keuangan bisnis Anda...
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grafik Arus Kas -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-xs font-extrabold text-slate-800">Grafik Arus Kas (Pemasukan vs Pengeluaran)</h3>
+            <span class="text-[10px] text-slate-400 font-medium">7 Hari Aktif</span>
+          </div>
+          <div class="h-44 w-full">
+            <canvas id="mobileCashflowChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Transaksi Terakhir -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
+          <div class="px-4 py-3 border-b border-slate-100 flex justify-between items-center">
+            <h3 class="text-xs font-extrabold text-slate-800">Catatan Keuangan Terbaru</h3>
+            <button onclick="switchTab('kas')" class="text-[11px] font-bold text-emerald-600">Lihat Semua &rarr;</button>
+          </div>
+          <div id="recentList" class="divide-y divide-slate-100"></div>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           TAB 2: BUKU KAS KEUANGAN LENGKAP
+           ================================================================= -->
+      <section id="tab-kas" class="tab-view hidden space-y-4 animate-fade">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs flex justify-between items-center">
+          <div>
+            <h2 class="text-sm font-extrabold text-slate-900">Buku Kas & Riwayat Keuangan</h2>
+            <p class="text-[11px] text-slate-500">Semua catatan pemasukan dan pengeluaran bisnis.</p>
+          </div>
+          <button onclick="openTrxModal('Pemasukan')" class="px-3 py-1.5 bg-emerald-600 text-white text-[11px] font-bold rounded-xl shadow-xs">
+            + Catat Baru
+          </button>
+        </div>
+
+        <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs space-y-2.5">
+          <div class="relative">
+            <input type="text" id="searchInput" onkeyup="renderKasList()" placeholder="🔍 Cari keterangan, kategori, atau nominal..." class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          </div>
+          <div class="flex gap-2">
+            <select id="filterType" onchange="renderKasList()" class="flex-1 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-semibold">
+              <option value="ALL">Semua Transaksi</option>
+              <option value="Pemasukan">Pemasukan (Omzet/Modal)</option>
+              <option value="Pengeluaran">Pengeluaran (Biaya/Belanja)</option>
+            </select>
+            <button onclick="exportCSV()" class="px-3.5 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 active:scale-95">
+              📥 CSV
+            </button>
+          </div>
+        </div>
+
+        <div id="fullKasList" class="space-y-2.5"></div>
+      </section>
+
+      <!-- =================================================================
+           TAB 3: KALKULATOR HPP & ANALISIS MENU
+           ================================================================= -->
+      <section id="tab-hpp" class="tab-view hidden space-y-4 animate-fade">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs space-y-3.5">
+          <div class="flex items-center gap-2.5 border-b border-slate-100 pb-3">
+            <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-lg">
+              🧮
+            </div>
+            <div>
+              <h2 class="text-sm font-extrabold text-slate-900">Kalkulator HPP & Harga Jual Menu</h2>
+              <p class="text-[11px] text-slate-500">Hitung modal bahan baku, kemasan, dan margin profit akurat.</p>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Nama Menu / Produk F&B</label>
+            <input type="text" id="hppMenuName" placeholder="Contoh: Es Kopi Susu Aren / Nasi Box" class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-semibold">
+          </div>
+
+          <div class="space-y-2">
+            <div class="flex justify-between items-center">
+              <label class="text-[11px] font-bold text-slate-700">Bahan Baku & Kemasan (Cup/Box)</label>
+              <button type="button" onclick="addIngredientRow()" class="text-[11px] font-bold text-emerald-600 flex items-center gap-1">
+                ➕ Tambah Bahan
+              </button>
+            </div>
+            <div id="ingredientRows" class="space-y-2">
+              <div class="flex gap-2 ing-row">
+                <input type="text" placeholder="Bahan utama (mis: Kopi + Susu)" class="flex-1 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl ing-name">
+                <input type="number" oninput="calcRecipeHPP()" placeholder="Rp Biaya" class="w-28 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl ing-cost">
+              </div>
+              <div class="flex gap-2 ing-row">
+                <input type="text" placeholder="Cup + Tutup + Sedotan" class="flex-1 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl ing-name">
+                <input type="number" oninput="calcRecipeHPP()" placeholder="Rp Biaya" class="w-28 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl ing-cost">
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pt-1">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Hasil Jadi (Porsi/Cup)</label>
+              <input type="number" id="hppYield" oninput="calcRecipeHPP()" value="1" min="1" class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Biaya Overhead (Gas/Listrik)</label>
+              <input type="number" id="hppOverhead" oninput="calcRecipeHPP()" placeholder="0" class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-[11px] font-bold mb-1">
+              <span class="text-slate-700">Target Profit Margin (%)</span>
+              <span id="hppMarginLabel" class="text-emerald-600">60%</span>
+            </div>
+            <input type="range" id="hppMarginSlider" min="10" max="300" value="60" oninput="document.getElementById('hppMarginLabel').innerText=this.value+'%'; calcRecipeHPP();" class="w-full accent-emerald-600">
+          </div>
+        </div>
+
+        <div class="bg-slate-900 text-white p-5 rounded-3xl shadow-lg space-y-3">
+          <div class="flex justify-between text-xs border-b border-slate-800 pb-2.5">
+            <span class="text-slate-400">Modal HPP per Porsi/Cup:</span>
+            <span id="outHppUnit" class="font-extrabold text-amber-400 text-sm">Rp 0</span>
+          </div>
+          <div class="flex justify-between text-xs border-b border-slate-800 pb-2.5">
+            <span class="text-slate-400">Keuntungan Bersih / Porsi:</span>
+            <span id="outProfitUnit" class="font-bold text-emerald-400">Rp 0</span>
+          </div>
+          <div class="flex justify-between items-center pt-1">
+            <div>
+              <span class="text-[11px] text-slate-400 block">Rekomendasi Harga Jual</span>
+              <span id="outFoodCostPct" class="text-[10px] text-emerald-400 font-semibold">Food Cost: 0%</span>
+            </div>
+            <span id="outSellPrice" class="text-2xl font-extrabold text-white">Rp 0</span>
+          </div>
+
+          <button onclick="saveMenuHPP()" class="w-full mt-2 py-3 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-slate-950 font-extrabold text-xs rounded-xl transition flex items-center justify-center gap-1.5">
+            💾 Simpan Kalkulasi ke Database Menu
+          </button>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
+          <div class="px-4 py-3 border-b border-slate-100">
+            <h3 class="text-xs font-extrabold text-slate-800">Daftar Kalkulasi Menu Tersimpan</h3>
+          </div>
+          <div id="savedMenusList" class="divide-y divide-slate-100"></div>
+        </div>
+      </section>
+
+      <!-- =================================================================
+           TAB 4: KASBON & HUTANG SUPPLIER
+           ================================================================= -->
+      <section id="tab-kasbon" class="tab-view hidden space-y-4 animate-fade">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center justify-between">
+          <div>
+            <h2 class="text-sm font-extrabold text-slate-900">Kasbon, Piutang & Hutang Supplier</h2>
+            <p class="text-[11px] text-slate-500">Kelola tagihan pelanggan & tempo bahan baku.</p>
+          </div>
+          <button onclick="openModal('modalDebt')" class="px-3.5 py-2.5 bg-amber-500 hover:bg-amber-600 active:scale-95 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-xs">
+            ➕ Catat
+          </button>
+        </div>
+        <div id="debtCardsList" class="space-y-2.5"></div>
+      </section>
+
+      <!-- =================================================================
+           TAB 5: PENGATURAN & BACKUP DATA
+           ================================================================= -->
+      <section id="tab-akun" class="tab-view hidden space-y-4 animate-fade">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs space-y-3">
+          <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-400">Profil & Target Keuangan</h3>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Nama Usaha / Kedai / Resto</label>
+            <input type="text" id="cfgOutletName" class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-semibold">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Alamat Usaha</label>
+            <input type="text" id="cfgOutletAddress" class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">No. WhatsApp Bisnis</label>
+              <input type="text" id="cfgOutletPhone" class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 mb-1">Target Omzet Bulanan (Rp)</label>
+              <input type="number" id="cfgTargetOmzet" class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold">
+            </div>
+          </div>
+          <button onclick="saveOutletConfig()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-xs transition">
+            Simpan Pengaturan Profil
+          </button>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs space-y-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">
+              🛡️
+            </div>
+            <div>
+              <h3 class="text-xs font-extrabold text-slate-900">Penyimpanan & Cloud Sync</h3>
+              <p class="text-[11px] text-slate-500">Data tersinkronisasi dengan Google Sheets & LocalStorage.</p>
+            </div>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200/70 text-[11px] text-slate-600 space-y-1">
+            <p><strong>Status Cloud:</strong> <span class="text-emerald-600 font-bold">Terhubung ke Google Sheets</span></p>
+            <p><strong>Total Catatan:</strong> <span id="storageStatsText">0 Transaksi, 0 Kasbon, 0 Menu</span></p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5">
+            <button onclick="downloadBackupJSON()" class="py-2.5 px-3 bg-slate-900 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 active:scale-95">
+              📥 Backup JSON
+            </button>
+            <label class="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
+              📤 Restore JSON
+              <input type="file" accept=".json" onchange="restoreBackupJSON(event)" class="hidden">
+            </label>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav fixed bottom-0 bg-white/95 backdrop-blur-md border-t border-slate-200 px-1 py-2 flex justify-around items-center z-30 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+      <button onclick="switchTab('dashboard')" data-nav="dashboard" class="nav-item active flex flex-col items-center gap-1 px-2.5 py-1 text-emerald-600">
+        <span class="text-lg">🏠</span>
+        <span class="text-[10px] font-extrabold">Beranda</span>
+      </button>
+      <button onclick="switchTab('kas')" data-nav="kas" class="nav-item flex flex-col items-center gap-1 px-2.5 py-1 text-slate-400">
+        <span class="text-lg">📋</span>
+        <span class="text-[10px] font-semibold">Buku Kas</span>
+      </button>
+      <button onclick="openTrxModal('Pemasukan')" class="flex flex-col items-center justify-center -mt-7">
+        <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-400 text-white shadow-lg shadow-emerald-600/35 border-4 border-white flex items-center justify-center active:scale-90 transition text-2xl font-bold">
+          +
+        </div>
+      </button>
+      <button onclick="switchTab('hpp')" data-nav="hpp" class="nav-item flex flex-col items-center gap-1 px-2.5 py-1 text-slate-400">
+        <span class="text-lg">🧮</span>
+        <span class="text-[10px] font-semibold">HPP Resep</span>
+      </button>
+      <button onclick="switchTab('kasbon')" data-nav="kasbon" class="nav-item flex flex-col items-center gap-1 px-2.5 py-1 text-slate-400">
+        <span class="text-lg">👥</span>
+        <span class="text-[10px] font-semibold">Kasbon</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- MODAL 1: TRANSAKSI -->
+  <div id="modalTrx" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 hidden items-end sm:items-center justify-center">
+    <div class="bg-white w-full max-w-[480px] rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl space-y-4 animate-slide-up">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+        <h3 class="text-base font-extrabold text-slate-900">Catat Transaksi Keuangan</h3>
+        <button onclick="closeModal('modalTrx')" class="p-1.5 bg-slate-100 rounded-full text-slate-500 font-bold">✕</button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl">
+        <button type="button" id="btnTypeIn" onclick="setTrxType('Pemasukan')" class="py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white shadow-2xs transition">
+          + Pemasukan (Omzet)
+        </button>
+        <button type="button" id="btnTypeOut" onclick="setTrxType('Pengeluaran')" class="py-2 text-xs font-bold rounded-lg text-slate-600 transition">
+          - Pengeluaran (Biaya)
+        </button>
+      </div>
+
+      <form id="formTrx" onsubmit="saveTransaction(event)" class="space-y-3">
+        <input type="hidden" id="trxType" value="Pemasukan">
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 mb-1">Nominal (Rp)</label>
+          <input type="number" id="trxAmount" required min="1" placeholder="0" class="w-full px-4 py-3 text-lg font-extrabold text-slate-900 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Kategori Keuangan</label>
+            <select id="trxCategory" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium"></select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Metode / Sumber Dana</label>
+            <select id="trxMethod" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium">
+              <option value="Kas Tunai">Kas Tunai</option>
+              <option value="QRIS / Rekening Bank">QRIS / Rekening Bank</option>
+              <option value="GoFood / GrabFood / ShopeeFood">Aplikasi Ojol</option>
+              <option value="Modal Pribadi">Modal Pribadi</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 mb-1">Keterangan / Catatan Transaksi</label>
+          <input type="text" id="trxDesc" required placeholder="Contoh: Omzet Penjualan Hari Ini / Beli Biji Kopi" class="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 mb-1">Tanggal</label>
+          <input type="date" id="trxDate" required class="w-full px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+        </div>
+        <button type="submit" id="btnSaveTrx" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold text-xs rounded-2xl shadow-md transition">
+          Simpan Catatan Keuangan
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: KASBON -->
+  <div id="modalDebt" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 hidden items-end sm:items-center justify-center">
+    <div class="bg-white w-full max-w-[480px] rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl space-y-4 animate-slide-up">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+        <h3 class="text-base font-extrabold text-slate-900">Catat Kasbon / Piutang / Hutang</h3>
+        <button onclick="closeModal('modalDebt')" class="p-1.5 bg-slate-100 rounded-full text-slate-500 font-bold">✕</button>
+      </div>
+      <form id="formDebt" onsubmit="saveDebt(event)" class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 mb-1">Jenis Catatan</label>
+          <select id="debtType" class="w-full px-3 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold">
+            <option value="Piutang">Piutang (Pelanggan Kasbon / Belum Bayar)</option>
+            <option value="Hutang">Hutang (Tempo ke Supplier Bahan Baku)</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Nama Pihak Terkait</label>
+            <input type="text" id="debtName" required placeholder="Contoh: Bu Ani / Supplier Kopi" class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">No. WhatsApp (628...)</label>
+            <input type="text" id="debtWa" placeholder="628123456789" class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+          </div>
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-700 mb-1">Keterangan Transaksi</label>
+          <input type="text" id="debtDesc" required placeholder="Contoh: Pesanan Catering Nasi Box 25 Porsi" class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Nominal (Rp)</label>
+            <input type="number" id="debtAmount" required min="1" placeholder="0" class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-bold">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">Jatuh Tempo</label>
+            <input type="date" id="debtDue" required class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl">
+          </div>
+        </div>
+        <button type="submit" class="w-full py-3.5 bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-extrabold text-xs rounded-2xl shadow-md">
+          Simpan Catatan Kasbon
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw4M6XYYQe4_YY3c24N6v_RHvQBakRUh0YXLY4xjsw4EFMoCNbMKAcRnm51uPnxmcGs/exec';
+
+    const fnbCategories = {
+      Pemasukan: [
+        "Penjualan Harian / Omzet",
+        "Penjualan Online (GoFood/Grab/Shopee)",
+        "Pesanan Catering / Event Khusus",
+        "Pelunasan Kasbon / Piutang",
+        "Suntikan Modal Usaha",
+        "Pemasukan Lain-Lain"
+      ],
+      Pengeluaran: [
+        "Bahan Baku Makanan & Minuman",
+        "Kemasan (Cup, Box, Plastik, Sedotan)",
+        "Gas LPG, Listrik & Air",
+        "Gaji Karyawan / Staff",
+        "Komisi & Potongan Aplikasi Ojol",
+        "Sewa Tempat / Booth",
+        "Peralatan & Maintenance",
+        "Pengeluaran Lain-Lain"
+      ]
+    };
+
+    const STORAGE_KEY = 'SAKECAKU_FINANCE_DB_V2';
+    let db = {
+      config: {
+        outletName: "KOPI & DAPUR NUSANTARA",
+        outletAddress: "Jl. Kuliner Nusantara No. 1",
+        outletPhone: "0812-3456-7890",
+        targetOmzet: 30000000
+      },
+      transactions: [],
+      debts: [],
+      menus: [
+        { id: "MNU-01", name: "Es Kopi Susu Aren", hpp: 6500, sellPrice: 18000, foodCost: "36.1" },
+        { id: "MNU-02", name: "Nasi Ayam Geprek Sambal Matah", hpp: 9000, sellPrice: 22000, foodCost: "40.9" }
+      ]
+    };
+
+    let chartInstance = null;
+
+    window.onload = function() {
+      loadPermanentData();
+      document.getElementById('trxDate').valueAsDate = new Date();
+      document.getElementById('debtDue').valueAsDate = new Date();
+      renderAll();
+    };
+
+    function loadPermanentData() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          db = { ...db, ...JSON.parse(saved) };
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
+      if (APPS_SCRIPT_URL && APPS_SCRIPT_URL.startsWith('https://')) {
+        fetch(APPS_SCRIPT_URL)
+          .then(res => res.json())
+          .then(res => {
+            if (res.status === 'success' && res.db) {
+              if (res.db.transactions && res.db.transactions.length > 0) {
+                db.transactions = res.db.transactions;
+              }
+              if (res.db.debts && res.db.debts.length > 0) {
+                db.debts = res.db.debts;
+              }
+              if (res.db.menus && res.db.menus.length > 0) {
+                db.menus = res.db.menus;
+              }
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+              renderAll();
+              showToast("Data tersinkronisasi dari Google Sheets!", "success");
+            }
+          })
+          .catch(err => console.log("Mode offline / Gagal ambil dari cloud:", err));
+      }
+    }
+
+    function savePermanentData() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+      } catch (e) {
+        showToast("Memori penuh! Segera Backup JSON.", "error");
+      }
+
+      if (APPS_SCRIPT_URL && APPS_SCRIPT_URL.startsWith('https://')) {
+        fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: "SYNC_ALL", db: db })
+        }).catch(err => console.error("Gagal sinkron ke cloud:", err));
+      }
+    }
+
+    function renderAll() {
+      document.getElementById('headerOutletName').innerText = db.config.outletName || "SAKECAKU KEUANGAN";
+      document.getElementById('cfgOutletName').value = db.config.outletName || "";
+      document.getElementById('cfgOutletAddress').value = db.config.outletAddress || "";
+      document.getElementById('cfgOutletPhone').value = db.config.outletPhone || "";
+      document.getElementById('cfgTargetOmzet').value = db.config.targetOmzet || 30000000;
+
+      let totalMasuk = 0, totalKeluar = 0, biayaBahan = 0;
+      db.transactions.forEach(t => {
+        const nom = Number(t.amount) || 0;
+        if (t.type === "Pemasukan") totalMasuk += nom;
+        else {
+          totalKeluar += nom;
+          if (t.category.includes("Bahan Baku") || t.category.includes("Kemasan")) biayaBahan += nom;
+        }
+      });
+
+      const laba = totalMasuk - totalKeluar;
+      const margin = totalMasuk > 0 ? ((laba / totalMasuk) * 100).toFixed(1) : 0;
+      const foodCostRatio = totalMasuk > 0 ? ((biayaBahan / totalMasuk) * 100).toFixed(1) : 0;
+
+      let piutangAktif = 0, hutangAktif = 0;
+      db.debts.forEach(d => {
+        if (d.status !== "Lunas") {
+          if (d.type === "Piutang") piutangAktif += Number(d.amount);
+          else hutangAktif += Number(d.amount);
+        }
+      });
+
+      document.getElementById('kpiLaba').innerText = formatRp(laba);
+      document.getElementById('kpiMarginBadge').innerText = `Margin ${margin}%`;
+      document.getElementById('kpiMasuk').innerText = formatRp(totalMasuk);
+      document.getElementById('kpiKeluar').innerText = formatRp(totalKeluar);
+      document.getElementById('kpiFoodCost').innerText = `${foodCostRatio}%`;
+      document.getElementById('kpiFoodCostStatus').innerText = foodCostRatio > 35 ? "⚠️ Tinggi (Ideal <35%)" : "✅ Sehat (Ideal 25-35%)";
+      document.getElementById('kpiFoodCostStatus').className = `text-[10px] font-semibold mt-0.5 ${foodCostRatio > 35 ? 'text-rose-600' : 'text-emerald-600'}`;
+      document.getElementById('kpiPiutang').innerText = formatRp(piutangAktif);
+      document.getElementById('kpiHutang').innerText = `Hutang: ${formatRp(hutangAktif)}`;
+
+      const target = Number(db.config.targetOmzet) || 30000000;
+      const pct = Math.min(100, Math.round((totalMasuk / target) * 100));
+      document.getElementById('targetPct').innerText = `${pct}%`;
+      document.getElementById('targetBar').style.width = `${pct}%`;
+      document.getElementById('targetNowText').innerText = formatRp(totalMasuk);
+      document.getElementById('targetMaxText').innerText = `Target: ${formatRp(target)}`;
+
+      const adv = document.getElementById('smartAdvisorMsg');
+      if (totalMasuk === 0 && totalKeluar === 0) {
+        adv.innerHTML = "Gunakan tombol <strong>+ Masuk</strong> atau <strong>- Keluar</strong> untuk mulai mencatat arus kas keuangan bisnis Anda.";
+      } else if (foodCostRatio > 38) {
+        adv.innerHTML = `⚠️ <strong>Food Cost Tinggi (${foodCostRatio}%):</strong> Biaya bahan baku melebihi batas ideal 35%. Evaluasi harga resep di menu <strong>HPP Resep</strong>.`;
+      } else if (laba > 0) {
+        adv.innerHTML = `🚀 <strong>Keuangan Sehat!</strong> Laba bersih mencapai <strong>${formatRp(laba)}</strong> dengan margin profit terkontrol di <strong>${margin}%</strong>.`;
+      } else {
+        adv.innerHTML = `📉 <strong>Perhatian Arus Kas:</strong> Total pengeluaran melebihi pemasukan sebesar <strong>${formatRp(Math.abs(laba))}</strong>.`;
+      }
+
+      document.getElementById('storageStatsText').innerText = `${db.transactions.length} Transaksi, ${db.debts.length} Kasbon, ${db.menus.length} Menu`;
+
+      renderRecentList();
+      renderKasList();
+      renderDebtList();
+      renderSavedMenus();
+      renderChart();
+    }
+
+    function renderRecentList() {
+      const container = document.getElementById('recentList');
+      const items = db.transactions.slice(0, 4);
+      if (items.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-xs text-slate-400">Belum ada catatan transaksi keuangan.</div>`;
+        return;
+      }
+      container.innerHTML = items.map(t => `
+        <div class="px-4 py-3 flex items-center justify-between hover:bg-slate-50">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${t.type === 'Pemasukan' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'} font-bold">
+              ${t.type === 'Pemasukan' ? '📥' : '🛒'}
+            </div>
+            <div class="truncate">
+              <p class="text-xs font-bold text-slate-800 truncate">${t.desc}</p>
+              <p class="text-[10px] text-slate-400 mt-0.5">${t.date} • ${t.method}</p>
+            </div>
+          </div>
+          <div class="text-right shrink-0 ml-2">
+            <p class="text-xs font-extrabold ${t.type === 'Pemasukan' ? 'text-emerald-600' : 'text-rose-600'}">
+              ${t.type === 'Pemasukan' ? '+' : '-'}${formatRp(t.amount)}
+            </p>
+            <span class="text-[10px] text-slate-400 font-semibold">${t.category}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderKasList() {
+      const container = document.getElementById('fullKasList');
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const fType = document.getElementById('filterType').value;
+
+      const filtered = db.transactions.filter(t => {
+        const matchQ = t.desc.toLowerCase().includes(q) || t.category.toLowerCase().includes(q);
+        const matchT = fType === 'ALL' || t.type === fType;
+        return matchQ && matchT;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-slate-200/80 text-center text-xs text-slate-400">Tidak ada transaksi ditemukan.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(t => `
+        <div class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs flex items-center justify-between">
+          <div class="min-w-0 pr-2">
+            <div class="flex items-center gap-1.5 mb-1">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${t.type === 'Pemasukan' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
+                ${t.category}
+              </span>
+              <span class="text-[10px] text-slate-400">${t.date}</span>
+            </div>
+            <p class="text-xs font-bold text-slate-900 truncate">${t.desc}</p>
+            <p class="text-[10px] text-slate-400 mt-0.5">Sumber: ${t.method}</p>
+          </div>
+          <div class="text-right shrink-0 flex flex-col items-end gap-1.5">
+            <p class="text-xs font-extrabold ${t.type === 'Pemasukan' ? 'text-emerald-600' : 'text-rose-600'}">
+              ${t.type === 'Pemasukan' ? '+' : '-'}${formatRp(t.amount)}
+            </p>
+            <button onclick="deleteTrx('${t.id}')" class="px-2 py-1 bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-600 rounded-lg text-xs font-bold">
+              🗑️ Hapus
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openTrxModal(type) {
+      setTrxType(type);
+      document.getElementById('modalTrx').classList.remove('hidden');
+      document.getElementById('modalTrx').classList.add('flex');
+    }
+
+    function setTrxType(type) {
+      document.getElementById('trxType').value = type;
+      const btnIn = document.getElementById('btnTypeIn');
+      const btnOut = document.getElementById('btnTypeOut');
+      const btnSave = document.getElementById('btnSaveTrx');
+
+      if (type === 'Pemasukan') {
+        btnIn.className = "py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white shadow-2xs transition";
+        btnOut.className = "py-2 text-xs font-bold rounded-lg text-slate-600 transition";
+        btnSave.className = "w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold text-xs rounded-2xl shadow-md transition";
+      } else {
+        btnOut.className = "py-2 text-xs font-bold rounded-lg bg-rose-600 text-white shadow-2xs transition";
+        btnIn.className = "py-2 text-xs font-bold rounded-lg text-slate-600 transition";
+        btnSave.className = "w-full py-3.5 bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-extrabold text-xs rounded-2xl shadow-md transition";
+      }
+
+      const catSelect = document.getElementById('trxCategory');
+      catSelect.innerHTML = fnbCategories[type].map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+
+    function saveTransaction(e) {
+      e.preventDefault();
+      const item = {
+        id: 'TRX-' + Date.now().toString().slice(-6),
+        type: document.getElementById('trxType').value,
+        amount: Number(document.getElementById('trxAmount').value),
+        category: document.getElementById('trxCategory').value,
+        method: document.getElementById('trxMethod').value,
+        desc: document.getElementById('trxDesc').value,
+        date: document.getElementById('trxDate').value
+      };
+      db.transactions.unshift(item);
+      savePermanentData();
+      closeModal('modalTrx');
+      document.getElementById('formTrx').reset();
+      document.getElementById('trxDate').valueAsDate = new Date();
+      renderAll();
+      showToast("Catatan keuangan tersimpan & tersinkron!", "success");
+    }
+
+    function deleteTrx(id) {
+      if (!confirm("Hapus catatan transaksi ini?")) return;
+      db.transactions = db.transactions.filter(t => t.id !== id);
+      savePermanentData();
+      renderAll();
+      showToast("Transaksi dihapus.", "info");
+    }
+
+    function addIngredientRow() {
+      const container = document.getElementById('ingredientRows');
+      const div = document.createElement('div');
+      div.className = "flex gap-2 ing-row";
+      div.innerHTML = `
+        <input type="text" placeholder="Nama bahan..." class="flex-1 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl ing-name">
+        <input type="number" oninput="calcRecipeHPP()" placeholder="Rp Biaya" class="w-28 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl ing-cost">
+      `;
+      container.appendChild(div);
+    }
+
+    let currentCalcMenu = { hpp: 0, sellPrice: 0, foodCost: 0 };
+
+    function calcRecipeHPP() {
+      let totalIng = 0;
+      document.querySelectorAll('.ing-cost').forEach(inp => totalIng += Number(inp.value) || 0);
+      const overhead = Number(document.getElementById('hppOverhead').value) || 0;
+      const yieldQty = Math.max(1, Number(document.getElementById('hppYield').value) || 1);
+      const margin = Number(document.getElementById('hppMarginSlider').value) || 60;
+
+      const hppUnit = Math.round((totalIng + overhead) / yieldQty);
+      const profitUnit = Math.round(hppUnit * (margin / 100));
+      const sellPrice = hppUnit + profitUnit;
+      const foodCost = sellPrice > 0 ? ((hppUnit / sellPrice) * 100).toFixed(1) : 0;
+
+      currentCalcMenu = { hpp: hppUnit, sellPrice, foodCost };
+      document.getElementById('outHppUnit').innerText = formatRp(hppUnit);
+      document.getElementById('outProfitUnit').innerText = formatRp(profitUnit);
+      document.getElementById('outSellPrice').innerText = formatRp(sellPrice);
+      document.getElementById('outFoodCostPct').innerText = `Food Cost: ${foodCost}%`;
+    }
+
+    function saveMenuHPP() {
+      const name = document.getElementById('hppMenuName').value.trim();
+      if (!name) {
+        showToast("Isi nama menu terlebih dahulu!", "error");
+        return;
+      }
+      db.menus.unshift({
+        id: 'MNU-' + Date.now().toString().slice(-5),
+        name,
+        hpp: currentCalcMenu.hpp,
+        sellPrice: currentCalcMenu.sellPrice,
+        foodCost: currentCalcMenu.foodCost
+      });
+      savePermanentData();
+      renderAll();
+      showToast("Kalkulasi HPP tersimpan ke database!", "success");
+    }
+
+    function deleteMenu(id) {
+      db.menus = db.menus.filter(m => m.id !== id);
+      savePermanentData();
+      renderAll();
+    }
+
+    function renderSavedMenus() {
+      const container = document.getElementById('savedMenusList');
+      if (db.menus.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-xs text-slate-400">Belum ada kalkulasi HPP disimpan.</div>`;
+        return;
+      }
+      container.innerHTML = db.menus.map(m => `
+        <div class="px-4 py-3 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold text-slate-800">${m.name}</p>
+            <p class="text-[10px] text-slate-500">Modal HPP: ${formatRp(m.hpp)} • Food Cost: ${m.foodCost}%</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-extrabold text-emerald-600">Jual: ${formatRp(m.sellPrice)}</span>
+            <button onclick="deleteMenu('${m.id}')" class="text-slate-400 hover:text-rose-500 p-1 font-bold">✕</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderDebtList() {
+      const container = document.getElementById('debtCardsList');
+      if (db.debts.length === 0) {
+        container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-slate-200/80 text-center text-xs text-slate-400">Belum ada catatan kasbon atau hutang.</div>`;
+        return;
+      }
+      container.innerHTML = db.debts.map(d => {
+        const isLunas = d.status === 'Lunas';
+        return `
+          <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs space-y-2.5">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md ${d.type === 'Piutang' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}">
+                  ${d.type}
+                </span>
+                <h4 class="text-xs font-extrabold text-slate-900 mt-1">${d.name}</h4>
+                <p class="text-[11px] text-slate-500">${d.desc}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-extrabold text-slate-900">${formatRp(d.amount)}</p>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full inline-block mt-1 ${isLunas ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                  ${d.status}
+                </span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-[11px]">
+              <span class="text-slate-400">Tempo: <strong class="text-slate-600">${d.due}</strong></span>
+              ${!isLunas ? `
+                <div class="flex gap-1.5">
+                  ${d.type === 'Piutang' ? `
+                    <button onclick="sendWA('${d.id}')" class="px-2.5 py-1 bg-green-500 text-white font-bold rounded-lg flex items-center gap-1 text-xs">
+                      💬 Tagih WA
+                    </button>
+                  ` : ''}
+                  <button onclick="markDebtPaid('${d.id}')" class="px-2.5 py-1 bg-slate-900 text-white font-bold rounded-lg text-xs">
+                    Lunas
+                  </button>
+                </div>
+              ` : `<button onclick="deleteDebt('${d.id}')" class="text-rose-500 font-semibold text-xs">Hapus</button>`}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function saveDebt(e) {
+      e.preventDefault();
+      db.debts.unshift({
+        id: 'DBT-' + Date.now().toString().slice(-5),
+        type: document.getElementById('debtType').value,
+        name: document.getElementById('debtName').value,
+        wa: document.getElementById('debtWa').value,
+        desc: document.getElementById('debtDesc').value,
+        amount: Number(document.getElementById('debtAmount').value),
+        due: document.getElementById('debtDue').value,
+        status: 'Belum Lunas'
+      });
+      savePermanentData();
+      closeModal('modalDebt');
+      document.getElementById('formDebt').reset();
+      document.getElementById('debtDue').valueAsDate = new Date();
+      renderAll();
+      showToast("Catatan kasbon tersimpan!", "success");
+    }
+
+    function markDebtPaid(id) {
+      const item = db.debts.find(d => d.id === id);
+      if (!item) return;
+      item.status = 'Lunas';
+      db.transactions.unshift({
+        id: 'TRX-' + Date.now().toString().slice(-6),
+        type: item.type === 'Piutang' ? 'Pemasukan' : 'Pengeluaran',
+        amount: item.amount,
+        category: item.type === 'Piutang' ? 'Pelunasan Kasbon / Piutang' : 'Bahan Baku Makanan & Minuman',
+        method: 'Kas Tunai',
+        desc: `Pelunasan ${item.type}: ${item.name} (${item.desc})`,
+        date: new Date().toISOString().slice(0, 10)
+      });
+      savePermanentData();
+      renderAll();
+      showToast("Lunas & otomatis tercatat di Buku Kas!", "success");
+    }
+
+    function deleteDebt(id) {
+      db.debts = db.debts.filter(d => d.id !== id);
+      savePermanentData();
+      renderAll();
+    }
+
+    function sendWA(id) {
+      const item = db.debts.find(d => d.id === id);
+      if (!item) return;
+      const msg = `Halo Kak *${item.name}*,
+
+Pengingat tagihan dari *${db.config.outletName}*:
+- Keterangan: ${item.desc}
+- Total: *${formatRp(item.amount)}*
+- Jatuh Tempo: ${item.due}
+
+Terima kasih! 🙏`;
+      const phone = (item.wa || '').replace(/[^0-9]/g, '');
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function renderChart() {
+      const dateMap = {};
+      [...db.transactions].reverse().forEach(t => {
+        if (!dateMap[t.date]) dateMap[t.date] = { in: 0, out: 0 };
+        if (t.type === 'Pemasukan') dateMap[t.date].in += Number(t.amount);
+        else dateMap[t.date].out += Number(t.amount);
+      });
+      const labels = Object.keys(dateMap).slice(-7);
+      const dataIn = labels.map(k => dateMap[k].in);
+      const dataOut = labels.map(k => dateMap[k].out);
+
+      const ctx = document.getElementById('mobileCashflowChart').getContext('2d');
+      if (chartInstance) chartInstance.destroy();
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels.length ? labels.map(d => d.slice(5)) : ['Hari Ini'],
+          datasets: [
+            { label: 'Pemasukan', data: dataIn.length ? dataIn : [0], backgroundColor: '#10b981', borderRadius: 5 },
+            { label: 'Pengeluaran', data: dataOut.length ? dataOut : [0], backgroundColor: '#f43f5e', borderRadius: 5 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } },
+          scales: { y: { beginAtZero: true, ticks: { font: { size: 9 } } }, x: { ticks: { font: { size: 9 } } } }
+        }
+      });
+    }
+
+    function saveOutletConfig() {
+      db.config = {
+        outletName: document.getElementById('cfgOutletName').value || "SAKECAKU KEUANGAN",
+        outletAddress: document.getElementById('cfgOutletAddress').value || "-",
+        outletPhone: document.getElementById('cfgOutletPhone').value || "-",
+        targetOmzet: Number(document.getElementById('cfgTargetOmzet').value) || 30000000
+      };
+      savePermanentData();
+      renderAll();
+      showToast("Pengaturan profil disimpan!", "success");
+    }
+
+    function downloadBackupJSON() {
+      const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `Backup_Keuangan_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      showToast("File backup JSON diunduh!", "success");
+    }
+
+    function restoreBackupJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && imported.transactions) {
+            db = imported;
+            savePermanentData();
+            renderAll();
+            showToast("Data berhasil dipulihkan!", "success");
+          }
+        } catch (err) {
+          showToast("Format file tidak valid.", "error");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function exportCSV() {
+      if (db.transactions.length === 0) {
+        showToast("Belum ada data.", "error");
+        return;
+      }
+      let csv = "ID,Tanggal,Jenis,Kategori,Deskripsi,Nominal,Sumber
+";
+      db.transactions.forEach(t => {
+        csv += `"${t.id}","${t.date}","${t.type}","${t.category}","${t.desc}",${t.amount},"${t.method}"
+`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `Laporan_Arus_Kas_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      showToast("Laporan CSV diunduh!", "success");
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
+      document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.classList.remove('text-emerald-600', 'font-extrabold');
+        btn.classList.add('text-slate-400', 'font-semibold');
+      });
+      const activeBtn = document.querySelector(`.nav-item[data-nav="${tabId}"]`);
+      if (activeBtn) {
+        activeBtn.classList.remove('text-slate-400', 'font-semibold');
+        activeBtn.classList.add('text-emerald-600', 'font-extrabold');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+      document.getElementById(id).classList.add('flex');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+      document.getElementById(id).classList.remove('flex');
+    }
+
+    function formatRp(n) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n || 0);
+    }
+
+    function showToast(msg, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const div = document.createElement('div');
+      const bg = type === 'error' ? 'bg-rose-600' : 'bg-slate-900 border-l-4 border-emerald-400';
+      div.className = `${bg} text-white px-4 py-3 rounded-2xl shadow-xl text-xs font-bold text-center transition-all duration-300`;
+      div.innerText = msg;
+      container.appendChild(div);
+      setTimeout(() => {
+        div.style.opacity = '0';
+        setTimeout(() => div.remove(), 300);
+      }, 2600);
+    }
+  </script>
+</body>
+</html>
